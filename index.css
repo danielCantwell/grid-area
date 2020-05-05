@@ -1,0 +1,250 @@
+h1 {
+    font-size: 3rem;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+main {
+    flex: 0 1 auto;
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+}
+
+footer {
+    flex: 0 0 auto;
+    border-top: 1px solid #000;
+
+    display: flex;
+    flex-direction: row;
+    padding: 1rem;
+
+    justify-content: center;
+}
+
+footer input[type="text"],
+footer select {
+    width: 15rem;
+}
+
+.content {
+    flex: 0 1 auto;
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+.sidebar {
+    flex: 0 0 auto;
+    width: 300px;
+    height: 100%;
+    border-left: 1px solid #000;
+}
+
+#grid {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+
+    background-color: #f3f3f3;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #d3d3d3;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.border-right {
+    border-right: 1px solid #d3d3d3;
+    padding-right: 1rem;
+    margin-right: 1rem;
+}
+
+.sidebar > section {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+label {
+    display: block;
+    font-weight: 200;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+input[type="text"], select, button {
+    border-radius: 0;
+    background-color: #fff;
+    border: 1px solid #d3d3d3;
+}
+
+input[type="text"]:hover {
+    border-color: #a3a3a3;
+}
+
+select:hover, button:hover, input[type="checkbox"] {
+    cursor: pointer;
+    border-color: #a3a3a3;
+}
+
+input[type="text"]:focus, select:focus, button:focus, option:focus {
+    outline: none;
+}
+
+select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #000;
+}
+
+input[type="text"] {
+    display: block;
+    width: 100%;
+    height: 2rem;
+    line-height: 2rem;
+    font-size: 1.3rem;
+    font-weight: 400;
+    padding-left: 0.5rem;
+
+    -webkit-appearance: none;
+}
+
+select {
+    display: block;
+    width: 100%;
+    height: 2rem;
+    line-height: 2rem;
+    font-size: 1.3rem;
+    font-weight: 400;
+    padding-left: 0.5rem;
+
+    -webkit-appearance: none;
+    outline: none;
+}
+
+button {
+    display: block;
+    background: none;
+    height: 2rem;
+    width: 2rem;
+    font-size: 1.3rem;
+    line-height: 2rem;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+
+    -webkit-appearance: none;
+}
+
+.inline {
+    display: inline-block;
+}
+
+label.clickable:hover {
+    cursor: pointer;
+}
+
+.round {
+    border-radius: 50%;
+}
+
+.section-header {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;;
+}
+
+.li-shape {
+    width: 100%;
+    /* height: 2rem; */
+    border: 1px solid #a3a3a3;
+    margin-top: 0.5rem;
+
+    display: flex;
+    flex-direction: row;
+    position: relative;
+}
+
+.li-shape-handle {
+    flex: 0 1 auto;
+    /* height: 2rem; */
+    /* line-height: 2rem; */
+    text-align: center;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    border-right: 1px solid #a3a3a3;
+}
+
+.li-shape-handle:hover {
+    cursor: pointer;
+    border: 1px solid #87ceeb;
+}
+
+.li-shape-content {
+    flex: 1 1 40px;
+    /* height: 2rem; */
+    /* line-height: 2rem; */
+    text-align: left;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+
+    
+    /* position: relative; */
+}
+
+.li-shape-label {
+    border: none;
+    flex: 1 1 auto;
+    width: auto;
+    max-width: auto;
+    /* width: auto; */
+    /* height: 2rem;
+    line-height: 2rem;
+    font-size: 1.3rem;
+    font-weight: 400; */
+
+}
+
+rect.focused {
+    stroke: #87ceeb;
+    stroke-width: 2px;
+}
+
+rect:hover {
+    cursor: grab;
+}
+
+rect.grabbing {
+    cursor: grabbing;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.flex-min {
+    flex: 0 1 auto;
+}
+
+.flex-max {
+    flex: 1 1 auto;
+}
+
+.btn-delete {
+    color: #8b0000;
+}

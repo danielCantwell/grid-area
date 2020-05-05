@@ -1,0 +1,87 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>Grid Area</title>
+    <meta name="description" content="Grid Area">
+    <meta name="author" content="Daniel Cantwell">
+
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <main>
+        <div class="content">
+            <!--  -->
+            <svg id="grid" width="1000" height="1000" viewBox="0 0 1000 1000">
+
+            </svg>
+        </div>
+        <div class="sidebar">
+            <section class="border-bottom">
+                <h1>Grid Area</h1>
+            </section>
+            <section class="border-bottom">
+                <label for="units">Units</label>
+                <select id="units">
+                    <option value="ft">Feet</option>
+                    <option value="in">Inches</option>
+                    <option value="m">Meters</option>
+                    <option value="cm">Centimeters</option>
+                </select>
+            </section>
+            <section class="border-bottom">
+                <label for="area-total">Total Area</label>
+                <span id="area-total">0</span>
+                <label for="area-selection">Selection Area</label>
+                <span id="area-selection">0</span>
+            </section>
+            <section>
+                <span class="section-header">Shapes</span>
+                <ol id="shapes">
+
+                </ol>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <section class="border-right">
+            <label for="tool-circle" class="clickable">
+                <input type="radio" name="draw-tool" id="tool-circle">
+                Circle
+            </label>
+            <label for="tool-rect" class="clickable">
+                <input type="radio" name="draw-tool" id="tool-rect" checked>
+                Rectangle
+            </label>
+        </section>
+        <section class="border-right">
+            <label for="selection">Draw Mode</label>
+            <select id="selection">
+                <option value="new">Distinct</option>
+                <option value="add">Additive</option>
+                <option value="remove">Subtractive</option>
+            </select>
+        </section>
+        <!-- <section class="border-right">
+            <label for="snap" class="clickable">
+                <input type="checkbox" id="snap">
+                Snap to Grid
+            </label>
+        </section> -->
+        <section>
+            <label for="zoom">Zoom</label>
+            <button class="inline round" id="zoom-decrease">-</button>
+            <button class="inline round" id="zoom-increase">+</button>
+        </section>
+    </footer>
+
+    <script src="index.js"></script>
+</body>
+
+</html>
