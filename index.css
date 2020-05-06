@@ -223,16 +223,16 @@ label.clickable:hover {
     cursor: crosshair;
 }
 
-rect.focused {
+rect.focused, circle.focused {
     stroke: #87ceeb;
     stroke-width: 2px;
 }
 
-rect:hover {
+rect:hover, circle:hover {
     cursor: grab;
 }
 
-rect.grabbing {
+rect.grabbing, circle.grabbing {
     cursor: grabbing;
 }
 

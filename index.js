@@ -10,6 +10,8 @@ const gridSpaces = {};
 
 const shapes = [];
 
+const drawToolRadios = document.getElementsByName('draw-tool');
+
 updateSvgViewBox(grid);
 
 // Initialize zoom level
@@ -46,7 +48,7 @@ window.addEventListener('resize', () => {
 });
 
 // Highlight selection area on mouse events
-let highlightRect = null;
+let highlightShape = null;
 let mouseDownCoordinates = [];
 grid.addEventListener('mousedown', (event) => {
     const [x, y] = transformToViewBox(grid, event.x, event.y);
@@ -57,15 +59,20 @@ grid.addEventListener('mousemove', (event) => {
     const [x, y] = transformToViewBox(grid, event.x, event.y);
 
     if (mouseDownCoordinates.length) {
-        const rectToMove = shapes.find(shape => shape.classList.contains('grabbing'));
-        if (rectToMove) {
+        const shapeToMove = shapes.find(shape => shape.classList.contains('grabbing'));
+        if (shapeToMove) {
             // Offset between rectangle x,y and mousedown x,y
-            const initOffsetX = rectToMove.dataset.mousedownRectX - mouseDownCoordinates[0];
-            const initOffsetY = rectToMove.dataset.mousedownRectY - mouseDownCoordinates[1];
+            const initOffsetX = shapeToMove.dataset.mouseDownShapeX - mouseDownCoordinates[0];
+            const initOffsetY = shapeToMove.dataset.mouseDownShapeY - mouseDownCoordinates[1];
 
             // Sustain offset with mousemove coordinate
-            rectToMove.setAttribute('x', x + initOffsetX);
-            rectToMove.setAttribute('y', y + initOffsetY);
+            if (shapeToMove.tagName === 'rect') {
+                shapeToMove.setAttribute('x', x + initOffsetX);
+                shapeToMove.setAttribute('y', y + initOffsetY);
+            } else if (shapeToMove.tagName === 'circle') {
+                shapeToMove.setAttribute('cx', x + initOffsetX);
+                shapeToMove.setAttribute('cy', y + initOffsetY);
+            }
         } else {
             highlightSelection(grid, mouseDownCoordinates[0], mouseDownCoordinates[1], x, y);
         }
@@ -75,30 +82,35 @@ grid.addEventListener('mousemove', (event) => {
 });
 
 grid.addEventListener('mouseup', (event) => {
-    if (highlightRect !== null) {
-        highlightRect.setAttribute('fill', '#fff');
-        highlightRect.setAttribute('stroke', '#000');
-        highlightRect.setAttribute('stroke-width', 1);
-        shapes.push(highlightRect);
+    if (highlightShape !== null) {
+        highlightShape.setAttribute('fill', '#fff');
+        highlightShape.setAttribute('stroke', '#000');
+        highlightShape.setAttribute('stroke-width', 1);
+        shapes.push(highlightShape);
 
-        highlightRect.addEventListener('mousedown', (event) => {
+        highlightShape.addEventListener('mousedown', (event) => {
             event.target.classList.add('grabbing');
 
             shapes.forEach(shape => shape.classList.remove('focused'));
             event.target.classList.add('focused');
 
-            event.target.dataset.mousedownRectX = parseFloat(event.target.getAttribute('x'));
-            event.target.dataset.mousedownRectY = parseFloat(event.target.getAttribute('y'));
+            if (event.target.tagName === 'rect') {
+                event.target.dataset.mouseDownShapeX = parseFloat(event.target.getAttribute('x'));
+                event.target.dataset.mouseDownShapeY = parseFloat(event.target.getAttribute('y'));
+            } else if (event.target.tagName === 'circle') {
+                event.target.dataset.mouseDownShapeX = parseFloat(event.target.getAttribute('cx'));
+                event.target.dataset.mouseDownShapeY = parseFloat(event.target.getAttribute('cy'));
+            }
         });
 
-        const li = createShapeLi(highlightRect);
+        const li = createShapeLi(highlightShape);
         shapesListElement.appendChild(li);
 
-        highlightRect = null;
+        highlightShape = null;
     } else {
-        const rectToMove = shapes.find(shape => shape.classList.contains('grabbing'));
-        if (rectToMove) {
-            rectToMove.classList.remove('grabbing');
+        const shapeToMove = shapes.find(shape => shape.classList.contains('grabbing'));
+        if (shapeToMove) {
+            shapeToMove.classList.remove('grabbing');
         }
     }
 
@@ -189,6 +201,15 @@ function drawRect(svg, x, y, width, height) {
     return rect;
 }
 
+function drawCircle(svg, x, y, radius) {
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', x);
+    circle.setAttribute('cy', y);
+    circle.setAttribute('r', radius);
+    svg.append(circle);
+    return circle;
+}
+
 
 // function drawRectForCoordinates(svg, x, y) {
 //     const width = Math.floor(svg.scrollWidth / zoom);
@@ -199,17 +220,25 @@ function drawRect(svg, x, y, width, height) {
 
 
 function highlightSelection(svg, x1, y1, x2, y2) {
-    if (highlightRect !== null) {
-        highlightRect.remove();
+    if (highlightShape !== null) {
+        highlightShape.remove();
     }
     const left = Math.min(x1, x2);
     const width = Math.abs(x2 - x1);
     const top = Math.min(y1, y2);
     const height = Math.abs(y2 - y1);
-    highlightRect = drawRect(svg, left, top, width, height);
-    highlightRect.setAttribute('fill', '#87ceeb44');
-    highlightRect.setAttribute('stroke', '#87ceeb');
-    highlightRect.setAttribute('stroke-width', 2);
+
+    const activeDrawTool = getActiveDrawTool();
+
+    if (activeDrawTool == 'tool-rect') {
+        highlightShape = drawRect(svg, left, top, width, height);
+    } else if (activeDrawTool == 'tool-circle') {
+        highlightShape = drawCircle(svg, x1, y1, width);
+    }
+
+    highlightShape.setAttribute('fill', '#87ceeb44');
+    highlightShape.setAttribute('stroke', '#87ceeb');
+    highlightShape.setAttribute('stroke-width', 2);
 }
 
 
@@ -314,4 +343,9 @@ function createCursorCoordinatesText(grid, x, y) {
 
     const textValue = `(${x}, ${y})`;
     cursorText.innerHTML = textValue;
+}
+
+
+function getActiveDrawTool() {
+    return document.querySelector('input[name="draw-tool"]:checked').value;
 }
