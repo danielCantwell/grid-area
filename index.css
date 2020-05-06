@@ -219,6 +219,10 @@ label.clickable:hover {
 
 }
 
+#grid {
+    cursor: crosshair;
+}
+
 rect.focused {
     stroke: #87ceeb;
     stroke-width: 2px;

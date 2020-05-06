@@ -32,6 +32,9 @@ drawGridBackground(gridGroup);
 // Create root group intended for drawing
 const root = addGroup(grid, 'root');
 
+// Create a group intended for metadata
+const metaGroup = addGroup(grid, 'meta');
+
 // Update svg viewBox and grid on window resize
 let resizeId = null;
 window.addEventListener('resize', () => {
@@ -51,9 +54,9 @@ grid.addEventListener('mousedown', (event) => {
 });
 
 grid.addEventListener('mousemove', (event) => {   
-    if (mouseDownCoordinates.length) {
-        const [x, y] = transformToViewBox(grid, event.x, event.y);
+    const [x, y] = transformToViewBox(grid, event.x, event.y);
 
+    if (mouseDownCoordinates.length) {
         const rectToMove = shapes.find(shape => shape.classList.contains('grabbing'));
         if (rectToMove) {
             // Offset between rectangle x,y and mousedown x,y
@@ -67,6 +70,8 @@ grid.addEventListener('mousemove', (event) => {
             highlightSelection(grid, mouseDownCoordinates[0], mouseDownCoordinates[1], x, y);
         }
     }
+
+    createCursorCoordinatesText(grid, x, y);
 });
 
 grid.addEventListener('mouseup', (event) => {
@@ -248,7 +253,6 @@ function transformToViewBox(svg, x, y) {
 }
 
 function createShapeLi(shape) {
-    const template = document.getElementById('li-shape');
     const li = document.createElement('li');
     li.className = 'li-shape';
 
@@ -287,4 +291,27 @@ function createShapeLi(shape) {
     });
 
     return li;
+}
+
+let cursorText = null;
+function createCursorCoordinatesText(grid, x, y) {
+    if (cursorText === null) {
+        cursorText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        cursorText.className = 'cursor-coords-text';
+        metaGroup.append(cursorText);
+    }
+
+    while (cursorText.lastChild) {
+        cursorText.lastChild.remove();
+    }
+
+    cursorText.setAttribute('x', x + 10);
+    cursorText.setAttribute('y', y - 10);
+    cursorText.setAttribute('fill', '#000');
+    cursorText.setAttribute('font-family', 'Verdana');
+    cursorText.setAttribute('font-size', '12');
+    cursorText.setAttribute('text-anchor', 'left');
+
+    const textValue = `(${x}, ${y})`;
+    cursorText.innerHTML = textValue;
 }
