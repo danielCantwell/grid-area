@@ -9,8 +9,12 @@ const shapesListElement = document.getElementById('shapes');
 const gridSpaces = {};
 
 const shapes = [];
+const shapeMap = new Map();
 
 const drawToolRadios = document.getElementsByName('draw-tool');
+
+const regexNumberInputNegativeAllowed = /^-?\d*\.?\d*$/;
+const regexNumberInputPositive = /^\d*\.?\d*$/;
 
 updateSvgViewBox(grid);
 
@@ -69,9 +73,21 @@ grid.addEventListener('mousemove', (event) => {
             if (shapeToMove.tagName === 'rect') {
                 shapeToMove.setAttribute('x', x + initOffsetX);
                 shapeToMove.setAttribute('y', y + initOffsetY);
+
+                const shapeLi = shapeMap.get(shapeToMove);
+                shapeLi.querySelector('[data-x]').value = parseFloat(shapeToMove.getAttribute('x'));
+                shapeLi.querySelector('[data-y]').value = parseFloat(shapeToMove.getAttribute('y'));
+                shapeLi.querySelector('[data-x]').oldValue = parseFloat(shapeToMove.getAttribute('x'));
+                shapeLi.querySelector('[data-y]').oldValue = parseFloat(shapeToMove.getAttribute('y'));
             } else if (shapeToMove.tagName === 'circle') {
                 shapeToMove.setAttribute('cx', x + initOffsetX);
                 shapeToMove.setAttribute('cy', y + initOffsetY);
+
+                const shapeLi = shapeMap.get(shapeToMove);
+                shapeLi.querySelector('[data-cx]').value = parseFloat(shapeToMove.getAttribute('cx'));
+                shapeLi.querySelector('[data-cy]').value = parseFloat(shapeToMove.getAttribute('cy'));
+                shapeLi.querySelector('[data-cx]').oldValue = parseFloat(shapeToMove.getAttribute('cx'));
+                shapeLi.querySelector('[data-cy]').oldValue = parseFloat(shapeToMove.getAttribute('cy'));
             }
         } else {
             highlightSelection(grid, mouseDownCoordinates[0], mouseDownCoordinates[1], x, y);
@@ -105,6 +121,19 @@ grid.addEventListener('mouseup', (event) => {
 
         const li = createShapeLi(highlightShape);
         shapesListElement.appendChild(li);
+        shapeMap.set(highlightShape, li);
+        shapeMap.set(li, highlightShape);
+
+        if (event.target.tagName === 'rect') {
+            li.querySelector('[data-x]').value = parseFloat(highlightShape.getAttribute('x'));
+            li.querySelector('[data-y]').value = parseFloat(highlightShape.getAttribute('y'));
+        } else if (event.target.tagName === 'circle') {
+            li.querySelector('[data-cx]').value = parseFloat(highlightShape.getAttribute('cx'));
+            li.querySelector('[data-cy]').value = parseFloat(highlightShape.getAttribute('cy'));
+            li.querySelector('[data-r]').value = parseFloat(highlightShape.getAttribute('r'));
+        } else {
+            console.log(event.target.tagName);
+        }
 
         highlightShape = null;
     } else {
@@ -282,34 +311,150 @@ function transformToViewBox(svg, x, y) {
 }
 
 function createShapeLi(shape) {
-    const li = document.createElement('li');
-    li.className = 'li-shape';
 
-    const handleDiv = document.createElement('div');
-    handleDiv.className = 'li-shape-handle';
-    li.appendChild(handleDiv);
+    const infoHtmlRect = `
+        <div class="input-group">
+            <div class="input-group-min">
+                <span>X</span>
+            </div>
+            <div class="input-group-max">
+                <input type="text" data-x="">
+            </div>
+            <div class="input-group-min">
+                <span>Y</span>
+            </div>
+            <div class="input-group-max">
+                <input type="text" data-y="">
+            </div>
+        </div>
+    `;
+    
+    const infoHtmlCircle = `
+        <div class="input-group">
+            <div class="input-group-min">
+                <span>CX</span>
+            </div>
+            <div class="input-group-max">
+                <input type="text" data-cx="">
+            </div>
+            <div class="input-group-min">
+                <span>CY</span>
+            </div>
+            <div class="input-group-max">
+                <input type="text" data-cy="">
+            </div>
+            <div class="input-group-min">
+                <span>R</span>
+            </div>
+            <div class="input-group-max">
+                <input type="text" data-r="">
+            </div>
+        </div>
+    `;
 
-    const contentDiv = document.createElement('div');
-    contentDiv.className = 'flex-row';
-    const input = document.createElement('input');
-    input.setAttribute('type', 'text');
-    input.classList.add('li-shape-label');
-    input.classList.add('flex-max');
-    const buttonDelete = document.createElement('button');
-    buttonDelete.classList.add('btn-delete');
-    buttonDelete.classList.add('flex-min');
-    buttonDelete.innerHTML = 'X';
-    contentDiv.appendChild(input);
-    contentDiv.appendChild(buttonDelete);
+    const infoHtml = shape.tagName === 'circle' ? infoHtmlCircle : infoHtmlRect;
 
-    li.appendChild(handleDiv);
-    li.appendChild(contentDiv);
+    const html = `
+        <li class="li-shape" data-order="${shapesListElement.children.length}">
+            <div class="input-group">
+                <div class="input-group-min">
+                    <span></span>
+                </div>
+                <div class="input-group-max">
+                    <input type="text" placeholder="${shapesListElement.children.length}">
+                </div>
+                <div class="input-group-min">
+                    <button data-collapsed="true" class="chevron-down"></button>
+                </div>
+            </div>
+            <div class="li-shape-info hidden">
+                ${infoHtml}
+            </div>
+        </li>
+    `;
+    const li = htmlToElement(html);
 
-    li.dataset.order = shapesListElement.children.length;
-    const liShapeLabel = li.querySelector('.li-shape-label');
-    liShapeLabel.setAttribute('placeholder', li.dataset.order);
+    const liCollapseButton = li.querySelector('[data-collapsed]');
+    const liShapeInfo = li.querySelector('.li-shape-info');
 
-    handleDiv.addEventListener('click', () => {
+    if (shape.tagName === 'rect') {
+        const xInput = li.querySelector('[data-x]');
+        const yInput = li.querySelector('[data-y]');
+        setInputFilter(xInput, val => regexNumberInputNegativeAllowed.test(val));
+        setInputFilter(yInput, val => regexNumberInputNegativeAllowed.test(val));
+    
+        xInput.addEventListener('blur', () => {
+            shapeMap.get(li).setAttribute('x', parseFloat(xInput.value));
+        });
+        yInput.addEventListener('blur', () => {
+            shapeMap.get(li).setAttribute('y', parseFloat(yInput.value));
+        });
+    
+        xInput.addEventListener('keydown', (keyEvent) => {
+            // Enter Key
+            if (keyEvent.which == 13) {
+                shapeMap.get(li).setAttribute('x', parseFloat(xInput.value));
+            }
+        });
+        yInput.addEventListener('keydown', (keyEvent) => {
+            // Enter Key
+            if (keyEvent.which == 13) {
+                shapeMap.get(li).setAttribute('y', parseFloat(yInput.value));
+            }
+        });
+    } else if (shape.tagName === 'circle') {
+        const cxInput = li.querySelector('[data-cx]');
+        const cyInput = li.querySelector('[data-cy]');
+        const rInput = li.querySelector('[data-r]');
+        setInputFilter(cxInput, val => regexNumberInputNegativeAllowed.test(val));
+        setInputFilter(cyInput, val => regexNumberInputNegativeAllowed.test(val));
+        setInputFilter(rInput, val => regexNumberInputPositive.test(val));
+
+        cxInput.addEventListener('blur', () => {
+            shapeMap.get(li).setAttribute('cx', parseFloat(cxInput.value));
+        });
+        cyInput.addEventListener('blur', () => {
+            shapeMap.get(li).setAttribute('cy', parseFloat(cyInput.value));
+        });
+        rInput.addEventListener('blur', () => {
+            shapeMap.get(li).setAttribute('r', parseFloat(rInput.value));
+        });
+
+        cxInput.addEventListener('keydown', (keyEvent) => {
+            // Enter Key
+            if (keyEvent.which == 13) {
+                shapeMap.get(li).setAttribute('cx', parseFloat(cxInput.value));
+            }
+        });
+        cyInput.addEventListener('keydown', (keyEvent) => {
+            // Enter Key
+            if (keyEvent.which == 13) {
+                shapeMap.get(li).setAttribute('cy', parseFloat(cyInput.value));
+            }
+        });
+        rInput.addEventListener('keydown', (keyEvent) => {
+            // Enter Key
+            if (keyEvent.which == 13) {
+                shapeMap.get(li).setAttribute('r', parseFloat(rInput.value));
+            }
+        });
+    }
+
+    liCollapseButton.addEventListener('click', () => {
+        const collapsed = liCollapseButton.dataset.collapsed === 'true';
+
+        if (collapsed) {
+            liCollapseButton.classList.remove('chevron-down');
+            liCollapseButton.classList.add('chevron-up');
+            liCollapseButton.dataset.collapsed = 'false';
+            liShapeInfo.classList.remove('hidden');
+        } else {
+            liCollapseButton.classList.remove('chevron-up');
+            liCollapseButton.classList.add('chevron-down');
+            liCollapseButton.dataset.collapsed = 'true';
+            liShapeInfo.classList.add('hidden');
+        }
+
         for (let i = 0; i < shapes.length; i++) {
             if (i == li.dataset.order) {
                 shapes[i].classList.add('focused');
@@ -348,4 +493,34 @@ function createCursorCoordinatesText(grid, x, y) {
 
 function getActiveDrawTool() {
     return document.querySelector('input[name="draw-tool"]:checked').value;
+}
+
+
+/**
+ * Creates a DOM Element from the given html string.
+ * @param {string} html - A string representation of html.
+ * @returns {ChildNode} the dom element created from the html string.
+ */
+function htmlToElement(html) {
+    const template = document.createElement('template');
+    template.innerHTML = html.trim();
+    return template.content.firstChild;
+}
+
+
+function setInputFilter(element, filter) {
+    ['input', 'keydown', 'keyup', 'mousedown', 'mouseup', 'select', 'contextmenu', 'drop'].forEach((event) => {
+        element.addEventListener(event, () => {
+            if (filter(element.value)) {
+                element.oldValue = element.value;
+                element.oldSelectionStart = element.selectionStart;
+                element.oldSelectionEnd = element.selectionEnd;
+            } else if (element.hasOwnProperty('oldValue')) {
+                element.value = element.oldValue;
+                element.setSelectionRange(element.oldSelectionStart, element.oldSelectionEnd);
+            } else {
+                element.value = '';
+            }
+        });
+    });
 }

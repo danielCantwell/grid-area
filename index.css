@@ -1,3 +1,7 @@
+:root {
+    --border-color: #d3d3d3;
+}
+
 h1 {
     font-size: 3rem;
     text-align: center;
@@ -64,13 +68,13 @@ footer select {
 }
 
 .border-bottom {
-    border-bottom: 1px solid #d3d3d3;
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 1rem;
     margin-bottom: 1rem;
 }
 
 .border-right {
-    border-right: 1px solid #d3d3d3;
+    border-right: 1px solid var(--border-color);
     padding-right: 1rem;
     margin-right: 1rem;
 }
@@ -87,13 +91,14 @@ label {
     margin-bottom: 0.5rem;
 }
 
-input[type="text"], select, button {
+input[type="text"], input[type="number"], select, button {
     border-radius: 0;
     background-color: #fff;
-    border: 1px solid #d3d3d3;
+    border: 1px solid var(--border-color);
 }
 
-input[type="text"]:hover {
+input[type="text"]:hover,
+input[type="number"]:hover {
     border-color: #a3a3a3;
 }
 
@@ -102,7 +107,7 @@ select:hover, button:hover, input[type="checkbox"] {
     border-color: #a3a3a3;
 }
 
-input[type="text"]:focus, select:focus, button:focus, option:focus {
+input[type="text"]:focus, input[type="number"]:focus, select:focus, button:focus, option:focus {
     outline: none;
 }
 
@@ -111,14 +116,19 @@ select:-moz-focusring {
     text-shadow: 0 0 0 #000;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="number"] {
     display: block;
     width: 100%;
-    height: 2rem;
-    line-height: 2rem;
-    font-size: 1.3rem;
+    max-width: 100%;
+    height: 100%;
+    margin: 0;
+    /* height: 2rem; */
+    /* line-height: 2rem; */
+    font-size: 1rem;
     font-weight: 400;
     padding-left: 0.5rem;
+    padding-right: 0.5rem;
 
     -webkit-appearance: none;
 }
@@ -165,16 +175,17 @@ label.clickable:hover {
 .section-header {
     font-size: 1.5rem;
     margin-bottom: 1rem;;
+    font-weight: 300;
 }
 
 .li-shape {
     width: 100%;
     /* height: 2rem; */
-    border: 1px solid #a3a3a3;
+    /* border: 1px solid #a3a3a3; */
     margin-top: 0.5rem;
 
-    display: flex;
-    flex-direction: row;
+    /* display: flex;
+    flex-direction: row; */
     position: relative;
 }
 
@@ -219,6 +230,63 @@ label.clickable:hover {
 
 }
 
+.li-shape-info {
+    padding: 1rem;
+    border-left: 1px solid #000;
+    border-right: 1px solid #000;
+    border-bottom: 1px solid #000;
+    overflow: hidden;
+}
+
+.hidden {
+    display: none;
+    /* height: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
+    overflow: hidden; */
+}
+
+.input-group {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 2rem;
+    border: 1px solid #000;
+}
+
+.input-group > div:not(:last-child) {
+    border: none;
+    border-right: 1px solid #000;
+}
+
+.input-group-min {
+    flex: 0 0 2rem;
+}
+
+.input-group-max {
+    flex: 1 0 4rem;
+    /* position: absolute; */
+    width: 100%;
+
+    /* display: block;
+    width: 100%;
+    height: 2rem;
+    line-height: 2rem;
+    font-size: 1.3rem;
+    font-weight: 400;
+    padding-left: 0.5rem;
+
+    -webkit-appearance: none; */
+}
+
+.input-group input[type="text"],
+.input-group input[type="number"],
+.input-group button {
+    border: none;
+}
+
+
 #grid {
     cursor: crosshair;
 }
@@ -250,5 +318,42 @@ rect.grabbing, circle.grabbing {
 }
 
 .btn-delete {
-    color: #8b0000;
+    /* color: #8b0000; */
+    color: black;
+}
+
+.chevron-down, .chevron-up {
+    position: relative;
+    display: block;
+    height: 1.2rem;
+    width: 100%;
+    height: 100%;
+}
+.chevron-down:before, .chevron-down:after,
+.chevron-up:before, .chevron-up:after {
+    position: absolute;
+    display: block;
+    content: '';
+    border: 0.6rem solid transparent;
+    border-radius: 0.8rem;
+}
+.chevron-down:before {
+    top: 35%;
+    left: 18%;
+    border-top-color: #000;
+}
+.chevron-down:after {
+    top: 20%;
+    left: 18%;
+    border-top-color: #fff;
+}
+.chevron-up:before {
+    bottom: 35%;
+    left: 18%;
+    border-bottom-color: #000;
+}
+.chevron-up:after {
+    bottom: 20%;
+    left: 18%;
+    border-bottom-color: #fff;
 }
