@@ -262,7 +262,8 @@ function highlightSelection(svg, x1, y1, x2, y2) {
     if (activeDrawTool == 'tool-rect') {
         highlightShape = drawRect(svg, left, top, width, height);
     } else if (activeDrawTool == 'tool-circle') {
-        highlightShape = drawCircle(svg, x1, y1, width);
+        const radius = calcRadius(width, height);
+        highlightShape = drawCircle(svg, x1, y1, radius);
     }
 
     highlightShape.setAttribute('fill', '#87ceeb44');
@@ -523,4 +524,15 @@ function setInputFilter(element, filter) {
             }
         });
     });
+}
+
+
+/**
+ * Calculates a radius based on width and height, rounded to 2 decimal places.
+ * @param {Number} width 
+ * @param {Number} height 
+ */
+function calcRadius(width, height) {
+    const radius = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
+    return Math.round((radius + Number.EPSILON) * 100) / 100
 }
